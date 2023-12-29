@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  Badge,
   Button,
   Card,
   CardContent,
@@ -74,46 +75,66 @@ const CartComponent = () => {
       ) : (
         <div className={styles.ordersContainer}>
           <Card className={styles.cardContainer}>
-            {data.orders.orders.map((order, index) => (
-              <Card className={styles.card} key={order._id}>
-                <CardMedia
-                  component="img"
-                  className={styles.image}
-                  image={order.product.imageUrl}
-                  alt={order.name}
-                />
-                <Typography
-                  className={styles.productName}
-                  sx={{ fontSize: "smaller", fontWeight: "bold" }}
-                  component="div"
-                >
-                  {order.product.name}
-                </Typography>
-                <Typography
-                  className={styles.quantity}
-                  sx={{ fontSize: "smaller", fontWeight: "bold" }}
-                  component="div"
-                >
-                  Quantity: {order.quantity}
-                </Typography>
-                <div className={styles.buttonContainer}>
-                  <IconButton onClick={() => handleIncrement(order._id)}>
-                    <AddIcon color="primary" />
-                  </IconButton>
-                  <IconButton color="primary">{order.quantity}</IconButton>
-                  <IconButton onClick={() => {order.quantity>1 && handleDecrement(order._id)}}>
-                    <RemoveIcon color="primary" />
-                  </IconButton>
-                </div>
-                <Typography
-                  component="div"
-                  className={styles.price}
-                  sx={{ fontWeight: "bold", fontSize: "smaller" }}
-                >
-                  Total Price: {order.totalPrice}
-                </Typography>
-              </Card>
-            ))}
+            {data.orders.orders.map((order, index) => {
+              const content =
+                order.product.offer.type === "flat"
+                  ? `Flat ${order.product.offer.flatDiscount} off`
+                  : order.product.offer?.type === "percentage"
+                  ? `${order.product.offer.percentageDiscount}% off`
+                  : "Bundled Offer";
+
+              return (
+                <Card className={styles.card} key={order._id}>
+                  {order.product.offeredPrice && (
+                    <Badge
+                      badgeContent={content}
+                      color="secondary"
+                      sx={{ position: "absolute", width: "110px" }}
+                    ></Badge>
+                  )}
+                  <CardMedia
+                    component="img"
+                    className={styles.image}
+                    image={order.product.imageUrl}
+                    alt={order.name}
+                  />
+                  <Typography
+                    className={styles.productName}
+                    sx={{ fontSize: "smaller", fontWeight: "bold" }}
+                    component="div"
+                  >
+                    {order.product.name}
+                  </Typography>
+                  <Typography
+                    className={styles.quantity}
+                    sx={{ fontSize: "smaller", fontWeight: "bold" }}
+                    component="div"
+                  >
+                    Quantity: {order.quantity}
+                  </Typography>
+                  <div className={styles.buttonContainer}>
+                    <IconButton onClick={() => handleIncrement(order._id)}>
+                      <AddIcon color="primary" />
+                    </IconButton>
+                    <IconButton color="primary">{order.quantity}</IconButton>
+                    <IconButton
+                      onClick={() => {
+                        order.quantity > 1 && handleDecrement(order._id);
+                      }}
+                    >
+                      <RemoveIcon color="primary" />
+                    </IconButton>
+                  </div>
+                  <Typography
+                    component="div"
+                    className={styles.price}
+                    sx={{ fontWeight: "bold", fontSize: "smaller" }}
+                  >
+                    Total Price: {order.originalPrice}
+                  </Typography>
+                </Card>
+              );
+            })}
           </Card>
           <Card style={{ display: "flex", justifyContent: "center" }}>
             <Card className={styles.totalCard}>
