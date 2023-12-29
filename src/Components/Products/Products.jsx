@@ -47,6 +47,8 @@ const Product = () => {
               className={styles.image}
               image={item.imageUrl}
               alt={item.name}
+              sx={{cursor:"pointer"}}
+                    onClick={()=>navigate(`/singleproduct/${item._id}`)}
             />
 
             <CardContent>
