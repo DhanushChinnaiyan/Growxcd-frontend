@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import styles from "./product.module.css";
 import Base from "../Base/Base";
+import AddIcon from "@mui/icons-material/Add";
 
 const SingleProduct = () => {
   const { productId } = useParams();
@@ -79,12 +80,31 @@ const SingleProduct = () => {
       ) : (
         <Card className={styles.Card}>
           {/* Products details */}
-          <CardMedia
-            component="img"
-            className={styles.CardMedia}
-            image={product?.imageUrl}
-            alt={product?.name}
-          />
+
+          {product?.offer.type === "bundled" ? (
+            <div className={styles.bundleStyle}>
+              <CardMedia
+                component="img"
+                image={product?.imageUrl}
+                alt={product?.name}
+                sx={{height:"calc(150px + 10vw)",width:"calc(150px + 10vw)"}}
+              />
+              <AddIcon />
+              <CardMedia
+                component="img"
+                image={product?.offer.bundledProduct.imageUrl}
+                alt={product?.name}
+                sx={{height:"calc(150px + 10vw)",width:"calc(150px + 10vw)"}}
+              />
+            </div>
+          ) : (
+            <CardMedia
+              component="img"
+              className={styles.CardMedia}
+              image={product?.imageUrl}
+              alt={product?.name}
+            />
+          )}
           <CardContent className={styles.productDetails}>
             <Typography gutterBottom variant="h5" component="div">
               {product?.name}
@@ -96,28 +116,28 @@ const SingleProduct = () => {
               Price: {product?.price}
             </Typography>
             {product?.inCart ? (
-              <div style={{display:"flex" ,gap:"1rem",flexWrap:"wrap"}}>
+              <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
                 <Button
-                disabled={fetchLoading}
-                variant="contained"
-                sx={{ backgroundColor: "black" }}
-                onClick={handleRemoveFromCart}
-                fullWidth
-              >
-                {fetchLoading ? (
-                  <CircularProgress size="30px" color="secondary" />
-                ) : (
-                  "Remove from cart"
-                )}
-              </Button>
-              <Button
-                variant="contained"
-                sx={{ backgroundColor: "black" }}
-                onClick={()=>navigate("/carts")}
-                fullWidth
-              >
-                Go to cart
-              </Button>
+                  disabled={fetchLoading}
+                  variant="contained"
+                  sx={{ backgroundColor: "black" }}
+                  onClick={handleRemoveFromCart}
+                  fullWidth
+                >
+                  {fetchLoading ? (
+                    <CircularProgress size="30px" color="secondary" />
+                  ) : (
+                    "Remove from cart"
+                  )}
+                </Button>
+                <Button
+                  variant="contained"
+                  sx={{ backgroundColor: "black" }}
+                  onClick={() => navigate("/carts")}
+                  fullWidth
+                >
+                  Go to cart
+                </Button>
               </div>
             ) : (
               <Button

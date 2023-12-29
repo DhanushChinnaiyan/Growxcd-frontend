@@ -60,7 +60,11 @@ const Product = () => {
                       variant="body1"
                     >
                       <CurrencyRupeeIcon fontSize="10px" />
-                      {item.price.toFixed(2)}
+                      {item.offer.type === "bundled"
+                        ? (
+                            item.price + item.offer.bundledProduct.price
+                          ).toFixed(2)
+                        : item.price.toFixed(2)}
                     </div>
                     <div className={styles.productPrice} variant="body1">
                       <CurrencyRupeeIcon fontSize="10px" />

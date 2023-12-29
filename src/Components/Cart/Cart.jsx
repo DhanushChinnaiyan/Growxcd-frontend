@@ -97,6 +97,8 @@ const CartComponent = () => {
                     className={styles.image}
                     image={order.product.imageUrl}
                     alt={order.name}
+                    sx={{cursor:"pointer"}}
+                    onClick={()=>navigate(`/singleproduct/${order.product._id}`)}
                   />
                   <Typography
                     className={styles.productName}
