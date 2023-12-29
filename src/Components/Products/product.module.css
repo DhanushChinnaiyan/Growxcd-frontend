@@ -59,7 +59,8 @@
     grid-template-columns: 1fr 1fr;
     gap: 10px;
     padding: 20px;
-    height: calc(100vh - 40px);
+    padding-top: 80px;
+    height: calc(100vh - 100px);
 }
 
 .CardMedia {

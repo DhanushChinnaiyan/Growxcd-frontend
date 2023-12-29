@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import styles from "./product.module.css";
+import Base from "../Base/Base";
 
 const SingleProduct = () => {
   const { productId } = useParams();
@@ -70,7 +71,7 @@ const SingleProduct = () => {
   }, []);
 
   return (
-    <div>
+    <Base>
       {productLoading ? (
         <div className={styles.progress}>
           <CircularProgress sx={{ color: "black" }} />
@@ -95,11 +96,13 @@ const SingleProduct = () => {
               Price: {product?.price}
             </Typography>
             {product?.inCart ? (
-              <Button
+              <div style={{display:"flex" ,gap:"1rem",flexWrap:"wrap"}}>
+                <Button
                 disabled={fetchLoading}
                 variant="contained"
                 sx={{ backgroundColor: "black" }}
                 onClick={handleRemoveFromCart}
+                fullWidth
               >
                 {fetchLoading ? (
                   <CircularProgress size="30px" color="secondary" />
@@ -107,6 +110,15 @@ const SingleProduct = () => {
                   "Remove from cart"
                 )}
               </Button>
+              <Button
+                variant="contained"
+                sx={{ backgroundColor: "black" }}
+                onClick={()=>navigate("/carts")}
+                fullWidth
+              >
+                Go to cart
+              </Button>
+              </div>
             ) : (
               <Button
                 disabled={fetchLoading}
@@ -124,7 +136,7 @@ const SingleProduct = () => {
           </CardContent>
         </Card>
       )}
-    </div>
+    </Base>
   );
 };
 

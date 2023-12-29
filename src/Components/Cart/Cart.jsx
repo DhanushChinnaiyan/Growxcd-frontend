@@ -7,72 +7,164 @@ import {
   CardContent,
   CardMedia,
   CircularProgress,
+  IconButton,
   Typography,
 } from "@mui/material";
 import styles from "./cart.module.css";
 import { useCommonContext } from "../../StateManagement/ContextApi";
 import Base from "../Base/Base";
-
-// ... (previous imports)
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 
 const CartComponent = () => {
-    const { getOrders, data, loading } = useCommonContext();
-    const navigate = useNavigate();
-  
-    useEffect(() => {
+  const { getOrders, data, loading, setLoading } = useCommonContext();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    getOrders();
+  }, []);
+  console.log(data);
+
+  const handleIncrement = async (productId) => {
+    try {
+      setLoading((prev) => ({
+        ...prev,
+        orderLoading: true,
+      }));
+      const response = await axios.put(
+        `https://growxcd-backend.onrender.com/orders/${productId}/updatequantity`,
+        {
+          quantity: 1,
+        }
+      );
+
+      console.log("Increment response:", response.data);
+    } catch (error) {
+      console.error("Error incrementing quantity:", error);
+    } finally {
       getOrders();
-    }, []);
-  
-    const handleIncrement = (index) => {
-      // Logic to increment order quantity
-      // Update data and trigger necessary state updates
-    };
-  
-    const handleDecrement = (index) => {
-      // Logic to decrement order quantity
-      // Update data and trigger necessary state updates
-    };
-  
-    return (
-      <Base>
-        {loading.orderLoading ? (
-          <div className={styles.progress}>
-            <CircularProgress sx={{ color: "black" }} />
-          </div>
-        ) : (
-          <div className={styles.ordersContainer}>
+    }
+  };
+
+  const handleDecrement = async (productId) => {
+    try {
+      setLoading((prev) => ({
+        ...prev,
+        orderLoading: true,
+      }));
+      const response = await axios.put(
+        `https://growxcd-backend.onrender.com/orders/${productId}/updatequantity`,
+        {
+          quantity: -1,
+        }
+      );
+      console.log("Decrement response:", response.data);
+    } catch (error) {
+      console.error("Error decrementing quantity:", error);
+    } finally {
+      getOrders();
+    }
+  };
+  return (
+    <Base>
+      {loading.orderLoading ? (
+        <div className={styles.progress}>
+          <CircularProgress sx={{ color: "black" }} />
+        </div>
+      ) : (
+        <div className={styles.ordersContainer}>
+          <Card className={styles.cardContainer}>
             {data.orders.orders.map((order, index) => (
               <Card className={styles.card} key={order._id}>
                 <CardMedia
-              component="img"
-              className={styles.image}
-              image={order.imageUrl}
-              alt={order.name}
-            />
-                <CardContent className={styles.leftSection}>
-                  <Typography gutterBottom variant="h5" component="div">
-                    {order.product.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Quantity: {order.quantity}
-                  </Typography>
-                </CardContent>
-                <CardContent className={styles.rightSection}>
-                  <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                    Total Price: {order.totalPrice}
-                  </Typography>
-                  <div className={styles.buttonContainer}>
-                    <Button onClick={() => handleIncrement(index)}>+</Button>
-                    <Button onClick={() => handleDecrement(index)}>-</Button>
-                  </div>
-                </CardContent>
+                  component="img"
+                  className={styles.image}
+                  image={order.product.imageUrl}
+                  alt={order.name}
+                />
+                <Typography
+                  className={styles.productName}
+                  sx={{ fontSize: "smaller", fontWeight: "bold" }}
+                  component="div"
+                >
+                  {order.product.name}
+                </Typography>
+                <Typography
+                  className={styles.quantity}
+                  sx={{ fontSize: "smaller", fontWeight: "bold" }}
+                  component="div"
+                >
+                  Quantity: {order.quantity}
+                </Typography>
+                <div className={styles.buttonContainer}>
+                  <IconButton onClick={() => handleIncrement(order._id)}>
+                    <AddIcon color="primary" />
+                  </IconButton>
+                  <IconButton color="primary">{order.quantity}</IconButton>
+                  <IconButton onClick={() => {order.quantity>1 && handleDecrement(order._id)}}>
+                    <RemoveIcon color="primary" />
+                  </IconButton>
+                </div>
+                <Typography
+                  component="div"
+                  className={styles.price}
+                  sx={{ fontWeight: "bold", fontSize: "smaller" }}
+                >
+                  Total Price: {order.totalPrice}
+                </Typography>
               </Card>
             ))}
-          </div>
-        )}
-      </Base>
-    );
-  };
-  
-  export default CartComponent;
-  
+          </Card>
+          <Card style={{ display: "flex", justifyContent: "center" }}>
+            <Card className={styles.totalCard}>
+              <CardContent>
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  textAlign="center"
+                  paddingBottom="20px"
+                >
+                  Total Orders Information
+                </Typography>
+                <Typography
+                  component="div"
+                  sx={{ fontSize: "smaller", fontWeight: "bold" }}
+                >
+                  Total Orders: {data.orders.totalOrders}
+                </Typography>
+                <Typography
+                  component="div"
+                  sx={{ fontSize: "smaller", fontWeight: "bold" }}
+                >
+                  Total Original Price:{" "}
+                  <span style={{ textDecoration: "line-through" }}>
+                    {data.orders.totalOriginalPrice}
+                  </span>
+                </Typography>
+                <Typography
+                  component="div"
+                  sx={{ fontSize: "smaller", fontWeight: "bold" }}
+                >
+                  Total Discounted Price: {data.orders.totalDiscountedPrice}
+                </Typography>
+                <Typography
+                  component="div"
+                  sx={{ fontSize: "smaller", fontWeight: "bold" }}
+                >
+                  Total Price: {data.orders.totalOfferedPrice}
+                </Typography>
+              </CardContent>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Button variant="contained" sx={{ backgroundColor: "black" }}>
+                  Buy now
+                </Button>
+              </div>
+            </Card>
+          </Card>
+        </div>
+      )}
+    </Base>
+  );
+};
+
+export default CartComponent;
